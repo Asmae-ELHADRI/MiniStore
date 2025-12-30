@@ -23,11 +23,12 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $user = auth()->user();
         $stats = [
-            'categories' => \App\Models\Category::count(),
-            'products' => \App\Models\Product::count(),
-            'clients' => \App\Models\Client::count(),
-            'orders' => \App\Models\Order::count(),
+            'categories' => $user->categories()->count(),
+            'products' => $user->products()->count(),
+            'clients' => $user->clients()->count(),
+            'orders' => $user->orders()->count(),
         ];
         return view('home', compact('stats'));
     }

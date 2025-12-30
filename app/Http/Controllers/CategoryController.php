@@ -9,7 +9,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::all();
+        $categories = auth()->user()->categories;
         return view('categories.index', compact('categories'));
     }
 
@@ -20,26 +20,36 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required|unique:categories|max:255']);
-        Category::create($request->all());
+        $request->validate(['name' => 'required|max:255']);
+        auth()->user()->categories()->create($request->all());
         return redirect()->route('categories.index')->with('success', 'Catégorie créée avec succès.');
     }
 
     public function edit(Category $category)
     {
+        $this->authorizeOwner($category);
         return view('categories.edit', compact('category'));
     }
 
     public function update(Request $request, Category $category)
     {
-        $request->validate(['name' => 'required|unique:categories,name,' . $category->id . '|max:255']);
+        $this->authorizeOwner($category);
+        $request->validate(['name' => 'required|max:255']);
         $category->update($request->all());
         return redirect()->route('categories.index')->with('success', 'Catégorie modifiée avec succès.');
     }
 
     public function destroy(Category $category)
     {
+        $this->authorizeOwner($category);
         $category->delete();
         return redirect()->route('categories.index')->with('success', 'Catégorie supprimée avec succès.');
+    }
+
+    protected function authorizeOwner(Category $category)
+    {
+        if ($category->user_id !== auth()->id()) {
+            abort(403);
+        }
     }
 }

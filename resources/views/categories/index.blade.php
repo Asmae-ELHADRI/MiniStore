@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-10">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 shadow-sm hover-elevate">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">{{ __('Catégories') }}</h5>
                     <a href="{{ route('categories.create') }}" class="btn btn-primary btn-sm rounded-pill px-3">

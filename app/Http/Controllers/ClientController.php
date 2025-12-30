@@ -9,7 +9,7 @@ class ClientController extends Controller
 {
     public function index()
     {
-        $clients = Client::all();
+        $clients = auth()->user()->clients;
         return view('clients.index', compact('clients'));
     }
 
@@ -22,24 +22,26 @@ class ClientController extends Controller
     {
         $request->validate([
             'name' => 'required|max:255',
-            'email' => 'required|email|unique:clients|max:255',
+            'email' => 'required|email|max:255', // Removed global unique for multi-user
             'phone' => 'nullable|max:20',
             'address' => 'nullable',
         ]);
-        Client::create($request->all());
+        auth()->user()->clients()->create($request->all());
         return redirect()->route('clients.index')->with('success', 'Client créé avec succès.');
     }
 
     public function edit(Client $client)
     {
+        $this->authorizeOwner($client);
         return view('clients.edit', compact('client'));
     }
 
     public function update(Request $request, Client $client)
     {
+        $this->authorizeOwner($client);
         $request->validate([
             'name' => 'required|max:255',
-            'email' => 'required|email|unique:clients,email,' . $client->id . '|max:255',
+            'email' => 'required|email|max:255',
             'phone' => 'nullable|max:20',
             'address' => 'nullable',
         ]);
@@ -49,7 +51,15 @@ class ClientController extends Controller
 
     public function destroy(Client $client)
     {
+        $this->authorizeOwner($client);
         $client->delete();
         return redirect()->route('clients.index')->with('success', 'Client supprimé avec succès.');
+    }
+
+    protected function authorizeOwner(Client $client)
+    {
+        if ($client->user_id !== auth()->id()) {
+            abort(403);
+        }
     }
 }

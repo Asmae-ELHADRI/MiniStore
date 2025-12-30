@@ -12,14 +12,14 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with('client')->latest()->get();
+        $orders = auth()->user()->orders()->with('client')->latest()->get();
         return view('orders.index', compact('orders'));
     }
 
     public function create()
     {
-        $clients = Client::all();
-        $products = Product::where('quantity', '>', 0)->get();
+        $clients = auth()->user()->clients;
+        $products = auth()->user()->products()->where('quantity', '>', 0)->get();
         return view('orders.create', compact('clients', 'products'));
     }
 
@@ -35,16 +35,18 @@ class OrderController extends Controller
         try {
             DB::beginTransaction();
 
-            $order = Order::create([
+            $client = auth()->user()->clients()->findOrFail($request->client_id);
+
+            $order = auth()->user()->orders()->create([
                 'client_id' => $request->client_id,
                 'total_price' => 0,
-                'status' => 'completed', // For this simple version
+                'status' => 'completed',
             ]);
 
             $totalPrice = 0;
 
             foreach ($request->products as $item) {
-                $product = Product::findOrFail($item['id']);
+                $product = auth()->user()->products()->findOrFail($item['id']);
 
                 if ($product->quantity < $item['quantity']) {
                     throw new \Exception("Stock insuffisant pour le produit: {$product->name}");
@@ -71,7 +73,15 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
+        $this->authorizeOwner($order);
         $order->load(['client', 'products']);
         return view('orders.show', compact('order'));
+    }
+
+    protected function authorizeOwner(Order $order)
+    {
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
+        }
     }
 }

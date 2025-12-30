@@ -1,7 +1,50 @@
 // Body
-$body-bg: #f8fafc;
+$body-bg: #f5f7fb;
 
 // Typography
-$font-family-sans-serif: 'Nunito', sans-serif;
-$font-size-base: 0.9rem;
+$font-family-sans-serif: 'Plus Jakarta Sans', 'Inter', 'Nunito', sans-serif;
+$font-size-base: 0.95rem;
 $line-height-base: 1.6;
+
+// Modern Color Palette (Fascinating & Vibrant)
+$primary: #6366f1;
+$secondary: #94a3b8;
+$success: #10b981;
+$info: #3b82f6;
+$warning: #f59e0b;
+$danger: #ef4444;
+$light: #f8fafc;
+$dark: #0f172a;
+
+// Custom Gradients
+$gradient-primary: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+$gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+$gradient-info: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%);
+$gradient-warning: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+$gradient-danger: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+
+// Rounded Corners
+$border-radius: 0.85rem;
+$border-radius-sm: 0.6rem;
+$border-radius-lg: 1.25rem;
+$border-radius-xl: 2rem;
+$border-radius-pill: 50rem;
+
+// Cards
+$card-border-width: 0;
+$card-border-radius: $border-radius-lg;
+$card-box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 5px 15px -5px rgba(0, 0, 0, 0.02);
+$card-cap-bg: transparent;
+
+// Buttons
+$btn-padding-y: 0.6rem;
+$btn-padding-x: 1.5rem;
+$btn-font-weight: 600;
+$btn-border-radius: $border-radius-sm;
+$btn-transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+// Navbar
+$navbar-padding-y: 1rem;
+$navbar-light-color: $secondary;
+$navbar-light-active-color: $primary;
+$navbar-light-hover-color: $primary;
