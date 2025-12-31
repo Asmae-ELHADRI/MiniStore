@@ -12,21 +12,31 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = auth()->user()->orders()->with('client')->latest()->get();
+        if (auth()->check() && auth()->user()->isAdmin()) {
+            $orders = Order::with('client')->latest()->get();
+        } else {
+            $orders = auth()->user()->orders()->with('client')->latest()->get();
+        }
         return view('orders.index', compact('orders'));
     }
 
     public function create()
     {
-        $clients = auth()->user()->clients;
-        $products = auth()->user()->products()->where('quantity', '>', 0)->get();
-        return view('orders.create', compact('clients', 'products'));
+        $selectedProductId = request('product_id');
+        $products = Product::where('quantity', '>', 0)->get();
+        
+        $clients = [];
+        if (auth()->check()) {
+            $clients = auth()->user()->clients;
+        }
+        
+        return view('orders.create', compact('clients', 'products', 'selectedProductId'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'client_id' => 'required|exists:clients,id',
+            'client_id' => 'nullable|exists:clients,id',
             'products' => 'required|array',
             'products.*.id' => 'required|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
@@ -35,18 +45,23 @@ class OrderController extends Controller
         try {
             DB::beginTransaction();
 
-            $client = auth()->user()->clients()->findOrFail($request->client_id);
+            // Find the owner for this order (use the owner of the first product)
+            $firstProduct = Product::findOrFail($request->products[0]['id']);
+            $ownerId = $firstProduct->user_id;
 
-            $order = auth()->user()->orders()->create([
+            $orderData = [
                 'client_id' => $request->client_id,
                 'total_price' => 0,
                 'status' => 'completed',
-            ]);
+                'user_id' => $ownerId,
+            ];
+
+            $order = Order::create($orderData);
 
             $totalPrice = 0;
 
             foreach ($request->products as $item) {
-                $product = auth()->user()->products()->findOrFail($item['id']);
+                $product = Product::findOrFail($item['id']);
 
                 if ($product->quantity < $item['quantity']) {
                     throw new \Exception("Stock insuffisant pour le produit: {$product->name}");
@@ -64,7 +79,13 @@ class OrderController extends Controller
             $order->update(['total_price' => $totalPrice]);
 
             DB::commit();
-            return redirect()->route('orders.index')->with('success', 'Commande créée avec succès.');
+            
+            if (auth()->check()) {
+                return redirect()->route('orders.index')->with('success', 'Commande créée avec succès.');
+            }
+            
+            return redirect()->route('home')->with('success', 'Votre commande a été enregistrée avec succès !');
+            
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withInput()->with('error', $e->getMessage());
@@ -80,6 +101,10 @@ class OrderController extends Controller
 
     protected function authorizeOwner(Order $order)
     {
+        if (auth()->check() && auth()->user()->isAdmin()) {
+            return;
+        }
+
         if ($order->user_id !== auth()->id()) {
             abort(403);
         }

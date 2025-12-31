@@ -30,22 +30,35 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('home') }}">
+                                <i class="fas fa-store me-1"></i>{{ __('Boutique') }}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('orders.create') }}">
+                                <i class="fas fa-shopping-cart me-1"></i>{{ __('Commander') }}
+                            </a>
+                        </li>
                         @auth
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('home') }}">{{ __('Home') }}</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('categories.index') }}">{{ __('Catégories') }}</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('products.index') }}">{{ __('Produits') }}</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('clients.index') }}">{{ __('Clients') }}</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('orders.index') }}">{{ __('Commandes') }}</a>
-                            </li>
+                            @if(auth()->user()->isAdmin())
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('categories.index') }}">{{ __('Catégories') }}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('products.index') }}">{{ __('Produits') }}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('clients.index') }}">{{ __('Clients') }}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('orders.index') }}">{{ __('Toutes les Commandes') }}</a>
+                                </li>
+                            @else
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('orders.index') }}">{{ __('Mes Commandes') }}</a>
+                                </li>
+                            @endif
                         @endauth
                     </ul>
 

@@ -35,7 +35,13 @@
                                 @forelse ($orders as $order)
                                     <tr>
                                         <td class="text-secondary">#{{ $order->id }}</td>
-                                        <td class="fw-bold">{{ $order->client->name }}</td>
+                                        <td class="fw-bold">
+                                            @if($order->client)
+                                                {{ $order->client->name }}
+                                            @else
+                                                <span class="text-muted"><i class="fas fa-user-secret me-1"></i>Invité</span>
+                                            @endif
+                                        </td>
                                         <td>{{ number_format($order->total_price, 2) }} DH</td>
                                         <td>
                                             <span class="badge bg-success rounded-pill px-3">

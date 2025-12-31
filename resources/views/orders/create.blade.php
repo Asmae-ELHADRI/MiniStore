@@ -20,9 +20,9 @@
                         @csrf
                         
                         <div class="mb-4">
-                            <label for="client_id" class="form-label fw-bold">Client</label>
-                            <select class="form-select @error('client_id') is-invalid @enderror" id="client_id" name="client_id" required>
-                                <option value="" selected disabled>Choisir un client</option>
+                            <label for="client_id" class="form-label fw-bold">Client (Optionnel)</label>
+                            <select class="form-select @error('client_id') is-invalid @enderror" id="client_id" name="client_id">
+                                <option value="" selected>Continuer en tant qu'invité</option>
                                 @foreach ($clients as $client)
                                     <option value="{{ $client->id }}" {{ old('client_id') == $client->id ? 'selected' : '' }}>{{ $client->name }} ({{ $client->email }})</option>
                                 @endforeach
@@ -35,7 +35,7 @@
                         <div class="mb-3 d-flex justify-content-between align-items-center">
                             <h6 class="mb-0 fw-bold">Produits</h6>
                             <button type="button" class="btn btn-outline-primary btn-sm rounded-pill" id="add-product">
-                                + Ajouter un produit
+                                + Ajouter un autre produit
                             </button>
                         </div>
 
@@ -52,10 +52,13 @@
                                     <tr class="product-row">
                                         <td>
                                             <select name="products[0][id]" class="form-select product-select" required>
-                                                <option value="" selected disabled>Choisir un produit</option>
+                                                <option value="" {{ !$selectedProductId ? 'selected' : '' }} disabled>Choisir un produit</option>
                                                 @foreach ($products as $product)
-                                                    <option value="{{ $product->id }}" data-stock="{{ $product->quantity }}" data-price="{{ $product->price }}">
-                                                        {{ $product->name }} (En stock: {{ $product->quantity }}, Prix: {{ $product->price }} DH)
+                                                    <option value="{{ $product->id }}" 
+                                                        {{ $selectedProductId == $product->id ? 'selected' : '' }}
+                                                        data-stock="{{ $product->quantity }}" 
+                                                        data-price="{{ $product->price }}">
+                                                        {{ $product->name }} ({{ number_format($product->price, 2) }} DH)
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -74,8 +77,10 @@
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center pt-2">
-                            <a href="{{ route('orders.index') }}" class="text-secondary text-decoration-none">Retour à la liste</a>
-                            <button type="submit" class="btn btn-primary rounded-pill px-4">Passer la commande</button>
+                            <a href="{{ route('home') }}" class="text-secondary text-decoration-none">Retour à la boutique</a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                                <i class="fas fa-check me-2"></i>Confirmer la commande
+                            </button>
                         </div>
                     </form>
                 </div>

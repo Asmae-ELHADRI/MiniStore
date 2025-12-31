@@ -14,10 +14,15 @@
                     <div class="row mb-5">
                         <div class="col-md-6">
                             <h6 class="text-secondary mb-3">Informations Client</h6>
-                            <p class="mb-1 fw-bold fs-5">{{ $order->client->name }}</p>
-                            <p class="mb-1 text-secondary text-decoration-none">{{ $order->client->email }}</p>
-                            <p class="mb-1 text-secondary text-decoration-none">{{ $order->client->phone ?? 'Pas de téléphone' }}</p>
-                            <p class="text-secondary text-decoration-none">{{ $order->client->address ?? 'Pas d\'adresse' }}</p>
+                            @if($order->client)
+                                <p class="mb-1 fw-bold fs-5">{{ $order->client->name }}</p>
+                                <p class="mb-1 text-secondary text-decoration-none">{{ $order->client->email }}</p>
+                                <p class="mb-1 text-secondary text-decoration-none">{{ $order->client->phone ?? 'Pas de téléphone' }}</p>
+                                <p class="text-secondary text-decoration-none">{{ $order->client->address ?? 'Pas d\'adresse' }}</p>
+                            @else
+                                <p class="mb-1 fw-bold fs-5 text-muted">Commande Invité</p>
+                                <p class="text-secondary">Cette commande a été passée par un visiteur non enregistré.</p>
+                            @endif
                         </div>
                         <div class="col-md-6 text-md-end">
                             <h6 class="text-secondary mb-3">Détails de la commande</h6>
